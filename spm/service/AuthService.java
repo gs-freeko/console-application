@@ -1,22 +1,24 @@
 package spm.service;
 
-import spm.model.Admin;
-import spm.model.Customer;
-import spm.model.User;
 import spm.data.DataStore;
+import spm.model.*;
 
 public class AuthService {
-    public User login(String email, String password){
-        for(Admin admin : DataStore.getAdmins()){
-            if(admin.getEmail().equals(email) && admin.getPassword().equals(password)){
-                return admin;
+
+    public User login(String email, String password) {
+
+        for (Admin a : DataStore.admins) {
+            if (a.getEmail().equals(email) && a.getPassword().equals(password)) {
+                return a;
             }
         }
-        for(Customer customer : DataStore.getCustomers()){
-            if(customer.getEmail().equals(email) && customer.getPassword().equals(password)){
-                return customer;
+
+        for (Customer c : DataStore.customers) {
+            if (c.getEmail().equals(email) && c.getPassword().equals(password)) {
+                return c;
             }
         }
+
         return null;
     }
 }

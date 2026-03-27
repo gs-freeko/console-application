@@ -1,24 +1,17 @@
 package spm.model;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 public class Bill {
-    private static int billCounter = 1;
-    private int billNumber;
-    private LocalDateTime billDate;
-    private List<CartItem> items;
-    private double totalAmount;
 
-    public Bill(List<CartItem> items, double totalAmount){
-        this.billNumber = billCounter++;
-        this.billDate = LocalDateTime.now();
+    private List<CartItem> items;
+    private double total;
+
+    public Bill(List<CartItem> items, double total) {
         this.items = items;
-        this.totalAmount = totalAmount;
+        this.total = total;
     }
 
-    public int getBillNumber() { return billNumber; }
-    public LocalDateTime getBillDate() { return billDate; }
     public List<CartItem> getItems() { return items; }
-    public double getTotalAmount() { return totalAmount; }
+    public double getTotal() { return total; }
 }

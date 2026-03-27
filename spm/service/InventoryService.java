@@ -1,53 +1,38 @@
 package spm.service;
 
-import spm.model.Product;
 import spm.data.DataStore;
-import java.util.List;
-import java.util.Comparator;
+import spm.model.Product;
 
 public class InventoryService {
-    public Product searchProductById(int id){
-        for(Product p : DataStore.getProducts()){
-            if(p.getId() == id){
-                return p;
-            }
+
+    public void viewProducts() {
+
+        System.out.println("\n+----+----------------------+----------+----------+");
+        System.out.printf("| %-2s | %-20s | %-8s | %-8s |\n", "ID", "Name", "Price", "Qty");
+        System.out.println("+----+----------------------+----------+----------+");
+
+        for (Product p : DataStore.products) {
+            System.out.printf("| %-2d | %-20s | %-8.2f | %-8d |\n",
+                    p.getId(), p.getName(), p.getPrice(), p.getQuantity());
         }
-        return null; // not found
+
+        System.out.println("+----+----------------------+----------+----------+");
     }
 
-    public void addProduct(Product p){ DataStore.getProducts().add(p); }
-
-    public void deleteProduct(int productId){
-        DataStore.getProducts().removeIf(p -> p.getId() == productId);
-    }
-
-    public void modifyProductQuantity(int productId, int quantity){
-        for(Product p : DataStore.getProducts()){
-            if(p.getId() == productId){
-                p.setQuantity(quantity);
-                return;
-            }
-        }
-    }
-
-    public List<Product> listProductsByName(){
-        List<Product> products = DataStore.getProducts();
-        products.sort(Comparator.comparing(Product::getName));
-        return products;
-    }
-
-    public List<Product> listProductsByPrice(){
-        List<Product> products = DataStore.getProducts();
-        products.sort(Comparator.comparing(Product::getPrice));
-        return products;
-    }
-
-    public Product searchProduct(String name){
-        for(Product p : DataStore.getProducts()){
-            if(p.getName().equalsIgnoreCase(name)){
-                return p;
-            }
+    public Product getProduct(int id) {
+        for (Product p : DataStore.products) {
+            if (p.getId() == id) return p;
         }
         return null;
+    }
+
+    public void addProduct(int id, String name, double price, int qty) {
+        DataStore.products.add(new Product(id, name, price, qty));
+        System.out.println("Product added!");
+    }
+
+    public void deleteProduct(int id) {
+        DataStore.products.removeIf(p -> p.getId() == id);
+        System.out.println("Product deleted!");
     }
 }

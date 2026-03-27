@@ -1,43 +1,26 @@
 package spm.service;
 
-import spm.model.Bill;
-import spm.model.CartItem;
-import spm.model.Customer;
-
-import java.util.List;
+import spm.model.*;
 
 public class PaymentService {
 
-    public Bill processPayment(Customer customer, List<CartItem> cartItems) {
+    public void checkout(Customer c) {
+
         double total = 0;
-        for (CartItem c : cartItems) {
-            total += c.getProduct().getPrice() * c.getQuantity();
+
+        for (CartItem item : c.getCart()) {
+            total += item.getProduct().getPrice() * item.getQuantity();
         }
 
-        if (total > customer.getCredit()) {
-            System.out.println("Insufficient credit! Payment failed.");
-            return null;
+        if (total > c.getCredit()) {
+            System.out.println("Insufficient credit!");
+            return;
         }
 
-        customer.setCredit(customer.getCredit() - total);
+        c.setCredit(c.getCredit() - total);
+        c.getCart().clear();
 
-        // Rewards logic
-        if (total >= 5000) {
-            customer.setCredit(customer.getCredit() + 100); // Payback to credit
-        } else {
-            int points = (int) (total / 100); // 1 point per 100 Rs
-            customer.addLoyaltyPoints(points);
-
-            if (customer.getLoyaltyPoints() >= 50) {
-                customer.setCredit(customer.getCredit() + 100); // Reward for 50 points
-                customer.addLoyaltyPoints(-50);
-            }
-        }
-
-        Bill bill = new Bill(cartItems, total);
-        customer.addBill(bill);
-
-        System.out.println("Payment successful! Total: " + total + ", Remaining Credit: " + customer.getCredit());
-        return bill;
+        System.out.println("Payment successful!");
+        System.out.println("Remaining Credit: " + c.getCredit());
     }
 }
