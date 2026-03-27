@@ -1,22 +1,24 @@
-package model;
+package lms.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User {
-    private String email;
-    private String password;
-    private String role;
 
-    private List<Book> borrowedBooks = new ArrayList<>();
+    protected String email;
+    protected String password;
+    private List<Book> borrowedBooks;
 
-    public User(String email, String password, String role) {
+    public User(String email, String password) {
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.borrowedBooks = new ArrayList<>();
     }
 
     public String getEmail() { return email; }
     public String getPassword() { return password; }
-    public String getRole() { return role; }
-    public List<Book> getBorrowedBooks() { return borrowedBooks; }
+
+    public List<Book> getBorrowedBooks() {
+        return borrowedBooks;
+    }
 }

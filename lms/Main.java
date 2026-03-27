@@ -1,77 +1,157 @@
-import java.util.*;
-import model.*;
-import service.*;
+package lms;
+
+import lms.model.*;
+import lms.service.*;
+import lms.data.DataStore;
+
+import java.util.Scanner;
 
 public class Main {
 
-    static Scanner sc = new Scanner(System.in);
-
     public static void main(String[] args) {
 
-        while (true) {
-            System.out.print("\nEmail: ");
-            String email = sc.next();
-            System.out.print("Password: ");
-            String pass = sc.next();
+        Scanner sc = new Scanner(System.in);
+        AuthService authService = new AuthService();
+        BookService bookService = new BookService();
 
-            User user = AuthService.login(email, pass);
+        System.out.println("===== Library Management System =====");
+        System.out.print("Enter Email: ");
+        String email = sc.nextLine();
 
-            if (user == null) {
-                System.out.println("Invalid login!");
-                continue;
-            }
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
 
-            if (user.getRole().equals("admin")) adminMenu();
-            else borrowerMenu(user);
+        User user = authService.login(email, password);
+
+        if (user == null) {
+            System.out.println("Invalid credentials!");
+            return;
         }
-    }
 
-    static void adminMenu() {
-        while (true) {
-            System.out.println("\n1.Add Book 2.View 3.Delete 4.Logout");
-            int ch = sc.nextInt();
+        // ================= ADMIN MENU =================
+        if (user instanceof Admin) {
 
-            switch (ch) {
-                case 1 -> {
-                    System.out.print("Name: ");
-                    String name = sc.next();
-                    System.out.print("ISBN: ");
-                    String isbn = sc.next();
-                    System.out.print("Qty: ");
-                    int qty = sc.nextInt();
-                    System.out.print("Price: ");
-                    double price = sc.nextDouble();
+            boolean running = true;
 
-                    BookService.addBook(new Book(name, isbn, qty, price));
+            while (running) {
+                System.out.println("\n--- Admin Menu ---");
+                System.out.println("1. View Books");
+                System.out.println("2. Add Book");
+                System.out.println("3. Delete Book");
+                System.out.println("0. Logout");
+
+                System.out.print("Enter choice: ");
+                int choice = sc.nextInt();
+                sc.nextLine();
+
+                switch (choice) {
+
+                    case 1:
+                        bookService.viewBooks();
+                        break;
+
+                    case 2:
+                        System.out.print("Enter Book ID: ");
+                        int id = sc.nextInt();
+                        sc.nextLine();
+
+                        System.out.print("Enter Book Name: ");
+                        String name = sc.nextLine();
+
+                        System.out.print("Enter Author: ");
+                        String author = sc.nextLine();
+
+                        System.out.print("Enter Quantity: ");
+                        int qty = sc.nextInt();
+
+                        DataStore.getBooks().add(new Book(id, name, author, qty));
+                        System.out.println("Book added successfully!");
+                        break;
+
+                    case 3:
+                        System.out.print("Enter Book ID to delete: ");
+                        int delId = sc.nextInt();
+
+                        DataStore.getBooks().removeIf(b -> b.getId() == delId);
+                        System.out.println("Book deleted successfully!");
+                        break;
+
+                    case 0:
+                        running = false;
+                        System.out.println("Logging out...");
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice!");
                 }
-                case 2 -> BookService.viewBooks();
-                case 3 -> {
-                    System.out.print("ISBN: ");
-                    BookService.deleteBook(sc.next());
-                }
-                case 4 -> { return; }
             }
         }
-    }
 
-    static void borrowerMenu(User user) {
-        while (true) {
-            System.out.println("\n1.View 2.Borrow 3.Return 4.Logout");
-            int ch = sc.nextInt();
+        // ================= USER MENU =================
+        else {
 
-            switch (ch) {
-                case 1 -> BookService.viewBooks();
-                case 2 -> {
-                    System.out.print("ISBN: ");
-                    Book b = BookService.findByISBN(sc.next());
-                    if (b != null) BorrowService.borrowBook(user, b);
+            boolean running = true;
+
+            while (running) {
+                System.out.println("\n--- User Menu ---");
+                System.out.println("1. View Books");
+                System.out.println("2. Search Book");
+                System.out.println("3. Borrow Book");
+                System.out.println("4. Return Book");
+                System.out.println("5. View Borrowed Books");
+                System.out.println("0. Logout");
+
+                System.out.print("Enter choice: ");
+                int choice = sc.nextInt();
+                sc.nextLine();
+
+                switch (choice) {
+
+                    case 1:
+                        bookService.viewBooks();
+                        break;
+
+                    case 2:
+                        System.out.print("Enter book name: ");
+                        String searchName = sc.nextLine();
+
+                        Book found = bookService.searchBook(searchName);
+                        if (found != null) {
+                            System.out.println("Found: " + found.getName() + " by " + found.getAuthor());
+                        } else {
+                            System.out.println("Book not found!");
+                        }
+                        break;
+
+                    case 3:
+                        System.out.print("Enter Book ID to borrow: ");
+                        int bid = sc.nextInt();
+
+                        bookService.borrowBook(user, bid);
+                        break;
+
+                    case 4:
+                        System.out.print("Enter Book ID to return: ");
+                        int rid = sc.nextInt();
+
+                        bookService.returnBook(user, rid);
+                        break;
+
+                    case 5:
+                        bookService.viewBorrowedBooks(user);
+                        break;
+
+                    case 0:
+                        running = false;
+                        System.out.println("Logging out...");
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice!");
                 }
-                case 3 -> {
-                    System.out.print("ISBN: ");
-                    BorrowService.returnBook(user, sc.next());
-                }
-                case 4 -> { return; }
             }
         }
+
+        sc.close();
     }
 }

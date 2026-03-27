@@ -1,22 +1,25 @@
-package model;
+package lms.model;
 
 public class Book {
-    private String name;
-    private String isbn;
-    private int quantity;
-    private double price;
 
-    public Book(String name, String isbn, int quantity, double price) {
+    private int id;
+    private String name;
+    private String author;
+    private int quantity;
+
+    public Book(int id, String name, String author, int quantity) {
+        this.id = id;
         this.name = name;
-        this.isbn = isbn;
+        this.author = author;
         this.quantity = quantity;
-        this.price = price;
     }
 
+    public int getId() { return id; }
     public String getName() { return name; }
-    public String getIsbn() { return isbn; }
+    public String getAuthor() { return author; }
     public int getQuantity() { return quantity; }
-    public double getPrice() { return price; }
 
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }
